@@ -168,13 +168,16 @@ def create_pod(
             pod_data['spec']['volumes'][0]['persistentVolumeClaim']['claimName'] = pvc_name
 
     if interface_type == constants.CEPHBLOCKPOOL and raw_block_pv:
-        if pod_dict_path == constants.FEDORA_DC_YAML:
+        if pod_dict == constants.FEDORA_DC_YAML:
             temp_dict = [
                 {'devicePath': raw_block_device, 'name': pod_data.get('spec').get(
                     'template').get('spec').get('volumes')[0].get('name')}
             ]
             del pod_data['spec']['template']['spec']['containers'][0]['volumeMounts']
             pod_data['spec']['template']['spec']['containers'][0]['volumeDevices'] = temp_dict
+            temp_dict = {'capabilities': {'add': ["SYS_ADMIN"]}}
+            pod_data['spec']['template']['spec']['containers'][0]['securityContext'] = temp_dict
+
         elif pod_dict_path == constants.NGINX_POD_YAML:
             temp_dict = [
                 {'devicePath': raw_block_device, 'name': pod_data.get('spec').get(
@@ -207,7 +210,7 @@ def create_pod(
         assert (ocp.OCP(kind='pod', namespace=namespace)).wait_for_resource(
             condition=deploy_pod_status,
             resource_name=pod_name + '-1-deploy',
-            resource_count=0, timeout=180, sleep=3
+            resource_count=0, timeout=360, sleep=3
         )
         dpod_list = pod.get_all_pods(namespace=namespace)
         for dpod in dpod_list:

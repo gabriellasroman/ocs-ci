@@ -857,3 +857,7 @@ RHCOS = "RHCOS"
 ES_SERVER_IP = '10.0.78.167'
 ES_SERVER_PORT = '9200'
 ES_SERVER_URL = 'https://10.0.78.167:9200'
+
+# files
+REMOTE_FILE_URL = "http://download.ceph.com/tarballs/ceph_15.1.0.orig.tar.gz"
+FILE_PATH = '/tmp/ceph.tar.gz'

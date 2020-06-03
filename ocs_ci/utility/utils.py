@@ -23,7 +23,7 @@ from paramiko import SSHClient, AutoAddPolicy
 from semantic_version import Version
 
 from ocs_ci.framework import config
-from ocs_ci.ocs import constants, defaults, ocp
+from ocs_ci.ocs import constants, defaults
 from ocs_ci.ocs.exceptions import (
     CephHealthException,
     CommandFailed,
@@ -34,7 +34,6 @@ from ocs_ci.ocs.exceptions import (
     UnsupportedOSType,
 )
 from ocs_ci.utility.retry import retry
-from ocs_ci.ocs.node import get_typed_worker_nodes
 
 
 log = logging.getLogger(__name__)
@@ -2063,6 +2062,9 @@ def post_ocp_workaround():
     Workaround for #1777384 - enable container_use_cephfs on RHEL workers
     Ticket: RHSTOR-787, see more details in the issue: #1151
     """
+    # Importing here to avoid circular dependancy
+    from ocs_ci.ocs import ocp
+    from ocs_ci.ocs.node import get_typed_worker_nodes
     log.info("Running WA for ticket: RHSTOR-787")
     ocp_obj = ocp.OCP()
     cmd = ['/usr/sbin/setsebool -P container_use_cephfs on']

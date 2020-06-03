@@ -2057,10 +2057,17 @@ def convert_device_size(unformatted_size, units_to_covert_to):
             return absolute_size
 
 
-def set_selinux_permissions():
+def set_selinux_permissions(workers=None):
     """
     Workaround for #1777384 - enable container_use_cephfs on RHEL workers
     Ticket: RHSTOR-787, see more details in the issue: #1151
+
+    Args:
+        workers (list): List of worker nodes to set selinux permissions
+
+    Returns:
+        bool : True if workaround gets applied successfully
+
     """
     # Importing here to avoid circular dependancy
     from ocs_ci.ocs import ocp
@@ -2068,10 +2075,11 @@ def set_selinux_permissions():
     log.info("Running WA for ticket: RHSTOR-787")
     ocp_obj = ocp.OCP()
     cmd = ['/usr/sbin/setsebool -P container_use_cephfs on']
-    workers = get_typed_worker_nodes(os_id="rhel")
+    cmd_list = cmd.copy()
+    if not workers:
+        workers = get_typed_worker_nodes(os_id="rhel")
     for worker in workers:
-        cmd_list = cmd.copy()
-        node = worker.get().get('metadata').get('name')
+        node = worker.get().get('metadata').get('name') if not workers else worker
         log.info(
             f"{node} is a RHEL based worker - applying '{cmd_list}'"
         )
@@ -2080,6 +2088,7 @@ def set_selinux_permissions():
         retry(CommandFailed)(ocp_obj.exec_oc_debug_cmd)(
             node=node, cmd_list=cmd_list
         )
+
     return True
 
 

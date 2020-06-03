@@ -48,7 +48,9 @@ from ocs_ci.utility.utils import (
     get_ocp_version,
     is_cluster_running,
     run_cmd,
-    post_ocp_workaround
+    set_selinux_permissions,
+    set_registry_to_managed_state,
+    add_stage_cert
 )
 from tests import helpers
 
@@ -134,7 +136,9 @@ class Deployment(object):
         """
         Function does post OCP deployment stuff we need to do.
         """
-        assert post_ocp_workaround(), "Adding workaround for the issue #1151 failed"
+        assert set_selinux_permissions(), "Adding workaround for the issue #1151 failed"
+        set_registry_to_managed_state()
+        add_stage_cert()
 
     def label_and_taint_nodes(self):
         """

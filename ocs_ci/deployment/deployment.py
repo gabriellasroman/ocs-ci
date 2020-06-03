@@ -37,7 +37,7 @@ from ocs_ci.ocs.resources.pod import (
     validate_pods_are_respinned_and_running_state,
     delete_pods)
 from ocs_ci.ocs.resources.pvc import get_all_pvc_objs
-from ocs_ci.ocs.resources.storage_cluster import get_all_storageclass, get_local_volume_cr, check_local_volume
+from ocs_ci.ocs.resources.storage_cluster import get_all_storageclass
 from ocs_ci.ocs.utils import (
     setup_ceph_toolbox, collect_ocs_logs
 )
@@ -701,23 +701,10 @@ class Deployment(object):
         for node in nodes_list:
             ocp_obj.exec_oc_debug_cmd(node=node, cmd_list=["rm -rf /var/lib/rook"])
 
-        # next 2 steps are from 4.4
-        if check_local_volume():
-            logger.info("deleting local volume resource")
-            local_volume_obj = get_local_volume_cr()
-            local_volume_obj.delete()
-
-            logger.info("removing localblock from nodes")
-            for node in nodes_list:
-                ocp_obj.exec_oc_debug_cmd(node=node, cmd_list=["rm -rf /mnt/local-storage/localblock"])
-
         logger.info("Delete the storage classes with an openshift-storage provisioner list")
         for storage_class in sc_list:
             sc_obj = ocp.OCP(kind=constants.STORAGECLASS)
             sc_obj.delete(resource_name=storage_class.get('metadata').get('name'))
-
-        logger.info("NOT SUPPORTED YET-Remove the taint from the storage nodes")
-        # ocp_obj.exec_oc_cmd("adm taint nodes --all node.ocs.openshift.io/storage-")
 
         logger.info("unlabaling storage nodes")
         nodes_list.append(get_labeled_nodes('topology.rook.io/rack'))

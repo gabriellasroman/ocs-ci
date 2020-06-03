@@ -2057,7 +2057,7 @@ def convert_device_size(unformatted_size, units_to_covert_to):
             return absolute_size
 
 
-def post_ocp_workaround():
+def set_selinux_permissions():
     """
     Workaround for #1777384 - enable container_use_cephfs on RHEL workers
     Ticket: RHSTOR-787, see more details in the issue: #1151
@@ -2080,9 +2080,6 @@ def post_ocp_workaround():
         retry(CommandFailed)(ocp_obj.exec_oc_debug_cmd)(
             node=node, cmd_list=cmd_list
         )
-    set_registry_to_managed_state()
-    add_stage_cert()
-
     return True
 
 

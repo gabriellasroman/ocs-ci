@@ -117,10 +117,10 @@ class ClusterLoad:
         Reach the cluster limit and then drop to the given target percentage.
         The number of pods needed for the desired target percentage is determined by
         creating pods one by one, while examining the cluster latency. Once the latency
-        is greater than 1 second and it is growing exponentially, it means that
-        the cluster limit has been reached. Then, the function deletes the
-        pods that are not needed as they are the difference between the limit (100%)
-        and the target percentage.
+        is greater than 0.2 of a second and it is growing exponentially, it means that
+        the cluster limit has been reached.
+        Then, dropping to the target percentage by deleting all pods and re-creating
+        ones with smaller value of FIO 'rate' param.
         This leaves the number of pods needed running IO for cluster load to
         be around the desired percentage.
 
@@ -182,7 +182,7 @@ class ClusterLoad:
                 )
                 limit_reached = True
 
-            # For under clusters that their nodes do not meet the min.
+            # For clusters that their nodes do not meet the minimum
             # resource requirements, the cluster limit is being reached
             # while the latency remains low. For that, the cluster limit
             # needs to be determined by the following condition of IOPS

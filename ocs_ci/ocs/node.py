@@ -335,7 +335,7 @@ def add_new_node_and_label_upi(node_type, num_nodes, mark_for_ocs_label=True):
 
     new_spun_nodes = list(set(nodes_after_exp) - set(initial_nodes))
     if node_type == constants.RHEL_OS:
-        assert set_selinux_permissions(workers=new_spun_nodes), "Adding workaround for the issue #1151 failed"
+        set_selinux_permissions(workers=new_spun_nodes)
 
     if mark_for_ocs_label:
         node_obj = ocp.OCP(kind='node')

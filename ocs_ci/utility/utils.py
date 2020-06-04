@@ -2065,9 +2065,6 @@ def set_selinux_permissions(workers=None):
     Args:
         workers (list): List of worker nodes to set selinux permissions
 
-    Returns:
-        bool : True if workaround gets applied successfully
-
     """
     # Importing here to avoid circular dependancy
     from ocs_ci.ocs import ocp
@@ -2088,8 +2085,6 @@ def set_selinux_permissions(workers=None):
         retry(CommandFailed)(ocp_obj.exec_oc_debug_cmd)(
             node=node, cmd_list=cmd_list
         )
-
-    return True
 
 
 def set_registry_to_managed_state():

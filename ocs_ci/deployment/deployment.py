@@ -136,7 +136,7 @@ class Deployment(object):
         """
         Function does post OCP deployment stuff we need to do.
         """
-        assert set_selinux_permissions(), "Adding workaround for the issue #1151 failed"
+        set_selinux_permissions()
         set_registry_to_managed_state()
         add_stage_cert()
 

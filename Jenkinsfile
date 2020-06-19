@@ -101,21 +101,6 @@ pipeline {
         """
       }
     }
-    stage("Tier1 Tests") {
-      environment {
-        EMAIL_ARG = """${sh(
-          returnStdout: true,
-          script: "if [ ! -z '${env.EMAIL}' ]; then echo -n '--email=${env.EMAIL}'; fi"
-        )}"""
-      }
-      steps {
-        script { LAST_STAGE=env.STAGE_NAME }
-        sh """
-        source ./venv/bin/activate
-        run-ci -m tier1 --ocsci-conf=ocs-ci-ocs.yaml --cluster-name=${env.CLUSTER_USER}-ocsci-${env.BUILD_ID} --cluster-path=cluster --self-contained-html --html=${env.WORKSPACE}/logs/report.html --junit-xml=${env.WORKSPACE}/logs/junit.xml --collect-logs --bugzilla ${env.EMAIL_ARG}
-        """
-      }
-    }
   }
   post {
     always {
@@ -133,7 +118,7 @@ pipeline {
     }
     failure {
       script {
-        if ( LAST_STAGE != "Acceptance Tests" || "Tier1 Tests") {
+        if ( LAST_STAGE != "Acceptance Tests" ) {
           emailext (
             subject: "Job '${env.JOB_NAME}' build #${env.BUILD_ID} failed during stage '${LAST_STAGE}'",
             body: "Build failed : ${env.BUILD_URL}",
